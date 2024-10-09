@@ -1,52 +1,19 @@
-const addPost= (event)=>{
-    event.preventDefault()
-    const form= document.getElementById("add_post")
-    const formData= new FormData(form)
-    // const imagefile= document.getElementById("image").files[0]
-    // console.log(imagefile);
-    // if(imagefile){
-    //   formData.append('image', imagefile);
-    // }
-    // formData.append('title', formData.get("title"));
-    // formData.append('bedrooms', formData.get("bedrooms"));
-    // formData.append('bathrooms', formData.get("bathrooms"));
-    // formData.append('balcony', formData.get("balcony"));
-    // formData.append('floor_number', formData.get("floor_number"));
-    // formData.append('additional_information', formData.get("additional_info"));
-    // formData.append('category', formData.getAll("category")); 
-    // formData.append('available_from', formData.get("available_from"));
-    // formData.append('rent', formData.get("rent"));
-    // formData.append('district', formData.get("district"));
-    // formData.append('area', formData.get("area"));
-    // const postData= {
-    //     title: formData.get("title"),
-    //     bedrooms: formData.get("bedrooms"),
-    //     bathrooms: formData.get("bathrooms"),
-    //     balcony: formData.get("balcony"),
-    //     floor_number: formData.get("floor_number"),
-    //     additional_information: formData.get("additional_info"),
-    //     category: formData.getAll("category"),
-    //     available_from: formData.get("available_from"),
-    //     rent: formData.get("rent"),
-    //     district: formData.get("district"),
-    //     area: formData.get("area")
-    // }
-    // console.log(postData.category);
-    // for(item of formData){
-    //     console.log(item[0], item[1]);
-    // }
-    const token= localStorage.getItem("authToken")
-    // Upload the image to Imgbb first
+const addPost= async (event)=>{
+  event.preventDefault()
+  const form= document.getElementById("add_post")
+  const formData= new FormData(form)
+  
+  const token= localStorage.getItem("authToken")
  const imageFile = formData.get('image');
  let imageUrl = '';
     if (imageFile) {
     const imgFormData = new FormData();
     imgFormData.append('image', imageFile);
-    const imgbbResponse = fetch('https://api.imgbb.com/1/upload?key=6e856a08d1a2dc102e60c57e964312e5', {
+    const imgbbResponse = await fetch('https://api.imgbb.com/1/upload?key=6e856a08d1a2dc102e60c57e964312e5', {
     method: 'POST',
     body: imgFormData
     });
-    const imgbbData =  imgbbResponse.json();
+    const imgbbData = await imgbbResponse.json();
     if (imgbbData.status === 200) {
     imageUrl = imgbbData.data.url;
     } else {
@@ -75,7 +42,7 @@ const addPost= (event)=>{
           "Content-Type": "application/json",
           Authorization: `Token ${token}`,
           },
-          body: JSON.stringify(articleData)
+          body: JSON.stringify(postData)
           })
           .then((res) => res.json())
           .then((data) => {
